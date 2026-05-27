@@ -140,7 +140,11 @@ export function checkCreditsMiddleware(
 
       if (autumnResult !== null) {
         success = autumnResult.allowed;
-        remainingCredits = autumnResult.remaining;
+        // When Autumn allows the request (including overage), don't let a
+        // small remaining balance clamp downstream limits (e.g. crawl).
+        remainingCredits = autumnResult.allowed
+          ? Infinity
+          : autumnResult.remaining;
       }
 
       if (chunk) {
